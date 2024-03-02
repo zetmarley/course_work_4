@@ -52,6 +52,30 @@ class Vacancy(HeadHunterAPI):
             box.append(Vacancy(i['name'], i['url'], good_salary, i['snippet']['requirement']))
         return box
 
+    @classmethod
+    def sort_top_vacancies(cls, vacancies_list):
+        """Функция сортирует и составляет топ по зарплате"""
+        top_list = []
+        for i in vacancies_list: top_list.append(i.__dict__)
+        return sorted(top_list, key=lambda d: sum(d['salary'][:-1]), reverse=True)
+
+    @classmethod
+    def filter_vacancies(cls, vacancies_list, filter_words):
+        """Функция фильтрует вакансии по ключевым словам"""
+        temp_list = []
+        for b in vacancies_list:
+            description = b["description"].translate({ord(','): None})
+            description = description.translate({ord('.'): None})
+            for a in filter_words.split(' '):
+                try:
+                    if b in temp_list:
+                        continue
+                    if a.lower() in description.lower():
+                        temp_list.append(b)
+                except TypeError:
+                    pass
+        return temp_list
+
 class JSONSaver(HeadHunterAPI):
     """Класс для сохранения вакансий в json файл"""
     def __init__(self):
@@ -68,7 +92,7 @@ class JSONSaver(HeadHunterAPI):
         """Добавляем вакансию в файл"""
         with open('data/vacancies.json') as fp:
             list_obj = json.load(fp)
-            list_obj.append(obj.__dict__)
+            list_obj.append(obj)
         with open('data/vacancies.json', 'w') as json_file:
             json.dump(list_obj, json_file, indent=4, separators=(',', ': '), ensure_ascii=False)
 
@@ -79,10 +103,18 @@ class JSONSaver(HeadHunterAPI):
             count = 0
             list_obj = json.load(fp)
             for i in list_obj:
-                if i['url'] == obj.url:
-                    list_obj.pop(count)
-                    count = 0
-                else:
-                    count += 1
+                try:
+                    if i['url'] == obj['url']:
+                        list_obj.pop(count)
+                        count = 0
+                    else:
+                        count += 1
+                except AttributeError:
+                    if i['url'] == obj.url:
+                        list_obj.pop(count)
+                        count = 0
+                    else:
+                        count += 1
+
         with open('data/vacancies.json', 'w') as json_file:
             json.dump(list_obj, json_file, indent=4, separators=(',', ': '), ensure_ascii=False)
