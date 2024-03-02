@@ -11,10 +11,14 @@ def sort_top_vacancies(vacancies_list):
 def filter_vacancies(vacancies_list, filter_words):
     """Функция фильтрует вакансии по ключевым словам"""
     temp_list = []
-    for a in filter_words:
-        for b in vacancies_list:
+    for b in vacancies_list:
+        description = b["description"].translate({ord(','): None})
+        description = description.translate({ord('.'): None})
+        for a in filter_words.split(' '):
             try:
-                if a in b['description']:
+                if b in temp_list:
+                    continue
+                if a in description:
                     temp_list.append(b)
             except TypeError:
                 pass
@@ -28,11 +32,12 @@ def user_interaction():
     vacancies = hh.get_vacancies(search_query, top_n)
     vacancies_list = Vacancy.cast_to_object_list(vacancies)
     sorted_top_vacancies = sort_top_vacancies(vacancies_list)
-    for i in sorted_top_vacancies: print(i)
-    filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
-    filtered_vacancies = filter_vacancies(sort_top_vacancies(vacancies_list), filter_words)
-    for i in filtered_vacancies: print(i)
+    for i in sorted_top_vacancies:
+        print(f'\nВакансия: {i["name"]}\nURL: {i["url"]}\nЗарплата: {" ".join([str(x) for x in i["salary"]])}\nОписание: {i["description"]}')
+    filter_words = input("\nВведите ключевые слова для фильтрации вакансий: ")
+    filtered_vacancies = filter_vacancies(sorted_top_vacancies, filter_words)
+    for i in filtered_vacancies:
+        print(f'\nВакансия: {i["name"]}\nURL: {i["url"]}\nЗарплата: {" ".join([str(x) for x in i["salary"]])}\nОписание: {i["description"]}')
 
 if __name__ == "__main__":
     user_interaction()
-

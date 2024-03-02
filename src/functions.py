@@ -4,7 +4,8 @@ from abc import ABC
 
 class HeadHunterAPI(ABC):
     """Класс для работы с HH.ru"""
-    API_KEY = 'lksjdklasdkl213123'
+    """API Ключ не понадобился"""
+
     url = 'https://api.hh.ru/vacancies'
     response = requests.get(url)
 
@@ -17,7 +18,6 @@ class HeadHunterAPI(ABC):
 
 class Vacancy(HeadHunterAPI):
     """Класс для работы с вакансиями"""
-    all = []
     count = 1
 
     def __init__(self, name, url, salary, description):
@@ -60,22 +60,22 @@ class JSONSaver(HeadHunterAPI):
     @classmethod
     def show(cls):
         """Показываем содержимое файла"""
-        with open('../data/vacancies.json', 'r') as file:
+        with open('data/vacancies.json', 'r') as file:
             return json.loads(file.read())
 
     @classmethod
     def add_vacancy(cls, obj):
         """Добавляем вакансию в файл"""
-        with open('../data/vacancies.json') as fp:
+        with open('data/vacancies.json') as fp:
             list_obj = json.load(fp)
             list_obj.append(obj.__dict__)
-        with open('../data/vacancies.json', 'w') as json_file:
+        with open('data/vacancies.json', 'w') as json_file:
             json.dump(list_obj, json_file, indent=4, separators=(',', ': '), ensure_ascii=False)
 
     @classmethod
     def delete_vacancy(cls, obj):
         """Удаляем вакансию из файла"""
-        with open('../data/vacancies.json') as fp:
+        with open('data/vacancies.json') as fp:
             count = 0
             list_obj = json.load(fp)
             for i in list_obj:
@@ -84,5 +84,5 @@ class JSONSaver(HeadHunterAPI):
                     count = 0
                 else:
                     count += 1
-        with open('../data/vacancies.json', 'w') as json_file:
+        with open('data/vacancies.json', 'w') as json_file:
             json.dump(list_obj, json_file, indent=4, separators=(',', ': '), ensure_ascii=False)
