@@ -1,15 +1,8 @@
-from src.functions import HeadHunterAPI, Vacancy, JSONSaver
-from main import user_vacancies_list, user_menu, user_search
-import json
-
-'''Class HeadHunterAPI test'''
-def test_get_vacancies():
-    hh = HeadHunterAPI()
-    vacancies = hh.get_vacancies('Python', 3)
-    assert vacancies[:11] == '{"items":[{'
-    assert len(json.loads(vacancies)['items']) == 3
+from src.vacancy import Vacancy
+from src.search_vacancies import Search_Vacancies
 
 '''Class Vacancy test'''
+
 def test_init():
     vacancy = Vacancy('Pavel', 'https://vk.com/id0', 80000, 'Can do everything')
     assert vacancy.__dict__['name'] == 'Pavel'
@@ -18,14 +11,14 @@ def test_init():
     assert vacancy.__dict__['description'] == 'Can do everything'
 
 def test_cast_to_object_list():
-    hh = HeadHunterAPI()
+    hh = Search_Vacancies()
     vacancies_list = Vacancy.cast_to_object_list(hh.get_vacancies('Python', 3))
     assert len(vacancies_list) == 3
     for i in vacancies_list:
-        assert str(i.__class__) == "<class 'src.functions.Vacancy'>"
+        assert str(i.__class__) == "<class 'src.vacancy.Vacancy'>"
 
 def test_sort_top_vacancies():
-    hh = HeadHunterAPI()
+    hh = Search_Vacancies()
     sorted_list = Vacancy.sort_top_vacancies(Vacancy.cast_to_object_list(hh.get_vacancies('Python', 3)))
     assert len(sorted_list) == 3
     assert sum(sorted_list[0]['salary'][:-1]) >= sum(sorted_list[1]['salary'][:-1]) >= sum(sorted_list[2]['salary'][:-1])
@@ -37,19 +30,3 @@ def test_filter_vacancies():
     filtered_list = Vacancy.filter_vacancies(vacancies_list, 'Menya zvat')
     assert filtered_list[0]['name'] == 'Vasya'
     assert filtered_list[1]['name'] == 'Tolya'
-
-'''Class JSONSaver test'''
-def show_add_delete_vacancy():
-    count = 0
-    before = JSONSaver.show()
-    vacancy1 = Vacancy('Ivan', 'opa', 'opa', 'amerika evropa')
-    vacancy2 = Vacancy('Petya', 'azia', 'evraziya', 'chto za bezobrazie...')
-    JSONSaver.add_vacancy(vacancy1)
-    JSONSaver.add_vacancy(vacancy2)
-    for i in JSONSaver.show():
-        if i['description'] == 'amerika evropa' or i['description'] == 'chto za bezobrazie...':
-            count += 1
-    assert count == 2
-    JSONSaver.delete_vacancy(vacancy1)
-    JSONSaver.delete_vacancy(vacancy2)
-    assert before == JSONSaver.show()

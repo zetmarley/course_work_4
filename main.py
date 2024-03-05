@@ -1,4 +1,6 @@
-from src.functions import HeadHunterAPI, Vacancy, JSONSaver
+from src.search_vacancies import Search_Vacancies
+from src.vacancy import Vacancy
+from src.jsonsaver import JSONSaver
 
 """Этим файлом будет пользоваться юзер"""
 
@@ -19,7 +21,7 @@ def user_menu():
 
 def user_search():
     """Сама функция для использования"""
-    hh = HeadHunterAPI()
+    hh = Search_Vacancies()
     search_query = input("Введите поисковый запрос: ")
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
     vacancies = hh.get_vacancies(search_query, top_n)
@@ -38,11 +40,14 @@ def user_search():
 def user_vacancies_list():
     dict_vacancies = {}
     count = 1
-    print('Сохраненные вакансии :')
-    for i in JSONSaver.show():
-        dict_vacancies[f'{count}'] = i
-        print(f'\nВакансия {count}: {i["name"]}\nURL: {i["url"]}\nЗарплата: {" ".join([str(x) for x in i["salary"]])}\nОписание: {i["description"]}')
-        count += 1
+    if JSONSaver.show() == []:
+        print('Список вакансий пуст')
+    else:
+        print('Сохраненные вакансии :')
+        for i in JSONSaver.show():
+            dict_vacancies[f'{count}'] = i
+            print(f'\nВакансия {count}: {i["name"]}\nURL: {i["url"]}\nЗарплата: {" ".join([str(x) for x in i["salary"]])}\nОписание: {i["description"]}')
+            count += 1
     choice = int(input('\n1. Добавить вакансию вручную.\n2. Удалить вакансию.\n3. Выйти в меню\nОтвет: '))
     if choice == 1:
         vacancy = Vacancy(input("Введи название вакансии: "), input("Введи ссылку на вакансию: "), input('Введи заработную плату: '), input("Введи описание вакансии: "))
