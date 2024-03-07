@@ -40,25 +40,26 @@ def user_search():
 def user_vacancies_list():
     dict_vacancies = {}
     count = 1
-    if JSONSaver.show() == []:
+    jsonsaver = JSONSaver()
+    if jsonsaver.show() == []:
         print('Список вакансий пуст')
     else:
         print('Сохраненные вакансии :')
-        for i in JSONSaver.show():
+        for i in jsonsaver.show():
             dict_vacancies[f'{count}'] = i
             print(f'\nВакансия {count}: {i["name"]}\nURL: {i["url"]}\nЗарплата: {" ".join([str(x) for x in i["salary"]])}\nОписание: {i["description"]}')
             count += 1
     choice = int(input('\n1. Добавить вакансию вручную.\n2. Удалить вакансию.\n3. Выйти в меню\nОтвет: '))
     if choice == 1:
         vacancy = Vacancy(input("Введи название вакансии: "), input("Введи ссылку на вакансию: "), input('Введи заработную плату: '), input("Введи описание вакансии: "))
-        JSONSaver.add_vacancy(vacancy.__dict__)
+        jsonsaver.add_vacancy(vacancy.__dict__)
         dict_vacancies[f'{count}'] = vacancy.__dict__
         print("Вакансия добавлена!")
     elif choice == 2:
         delete_choice = input('Номер какой вакансии вы желаете удалить?\nОтвет: ')
         for k, v in dict_vacancies.items():
             if k == str(delete_choice):
-                JSONSaver.delete_vacancy(v)
+                jsonsaver.delete_vacancy(v)
                 print("Вакансия удалена!")
             elif int(delete_choice) > int(k):
                 delete_choice = input('Неправильный номер вакансии!\nНомер какой вакансии вы желаете удалить?\nОтвет: ')
